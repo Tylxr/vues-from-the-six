@@ -1,17 +1,51 @@
 <script setup>
+import { ref } from 'vue';
+
+// Temporary
+const posts = ref([
+    {
+        name: 'Jessie Nelson',
+        avatar: 'https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg',
+        timeFormatted: '17:49',
+        message: 'Did you want to go there tomorrow?',
+        notifications: 2,
+        status: 'online'
+    },
+    {
+        name: 'Thomas Dixon',
+        avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        timeFormatted: '13:24',
+        message: 'Sounds good to me.',
+        notifications: 1,
+        status: 'away'
+    },
+    {
+        name: 'Abbie Smith',
+        avatar: 'https://maundymitchell.com/wp-content/uploads/2019/09/Actor-Headshot-on-White-Background_0003-1024x683.jpg',
+        timeFormatted: '11:03',
+        message: 'That\'s good to hear. I\'m glad he\'s doing so well for himself.',
+        notifications: 0,
+        status: 'offline'
+    },
+    {
+        name: 'Alex Jones',
+        avatar: 'https://www.opticalexpress.co.uk/media/1064/man-with-glasses-smiling-looking-into-distance.jpg',
+        timeFormatted: '09:00',
+        message: 'If you want to! Any day is fine with me.',
+        notifications: 0,
+        status: 'away'
+    }
+]);
+
 </script>
 
 <template>
-    <div>
-        <!-- <font-awesome-icon :icon="['fas', 'sms']" /> -->
-    </div>
-
     <!-- Navigation Header Component -->
     <div class="nav-container flex justify-between bg-white">
-        <div class="logo-container flex items-center p-7">
-            <ul class="flex justify-between text-3xl">
+        <div class="logo-container flex items-center p-5">
+            <ul class="flex justify-between items-center text-3xl">
                 <li>
-                    <font-awesome-icon class="text-cyan-500" :icon="['fas', 'sms']" />
+                    <font-awesome-icon class="text-cyan-500 text-5xl" :icon="['fas', 'sms']" />
                 </li>
                 <li>
                     <span class="italic">Chattr</span>
@@ -19,21 +53,22 @@
             </ul>
         </div>
         <div class="navigation flex p-7 items-center">
-            <ul class="flex justify-between text-sm font-bold uppercase items-center">
+            <ul class="flex justify-between text-sm uppercase items-center">
                 <li class="ml-4 active">Chat</li>
                 <li class="ml-4">Conversations</li>
                 <li class="ml-4">Discover</li>
-                <li class="ml-4">
+                <li class="ml-4 relative">
                     <font-awesome-icon class="text-2xl" :icon="['far', 'bell']" />
+                    <span class="h-2 w-2 top-0 right-0 absolute rounded-full bg-orange-400"></span>
                 </li>
             </ul>
         </div>
     </div>
 
     <!-- Chat Page/Route -->
-    <div class="chat-page flex h-full">
+    <div class="chat-page flex">
         <!-- MiniConversation Component -->
-        <div class="mini-conversation-container w-1/3 bg-gray-200">
+        <div class="mini-conversation-container w-1/3 bg-gray-200 overflow-scroll pb-4">
             <!-- Search Component -->
             <div class="search relative m-4">
                 <input
@@ -47,35 +82,39 @@
                 />
             </div>
 
-            <div class="conversation-container text-sm">
-                <h4 class="ml-4 mb-1 italic text-gray-600">Recent Conversations</h4>
+            <h4 class="ml-4 mb-1 italic text-gray-600">Recent Conversations</h4>
+
+            <div v-for="(post, index) in posts" :key="index" class="conversation-container text-sm">
                 <!-- Lots of these -->
                 <div
-                    class="conversation bg-white flex mx-4 rounded-t-lg border-b-2 border-b-gray-300"
+                    :class="['conversation cursor-pointer hover:bg-gray-50 bg-white flex mx-4 border-b-2 border-b-gray-100',
+                    index === 0 ? 'rounded-t-lg' : '', index === posts.length - 1 ? 'rounded-b-lg' : '']"
                 >
-                    <div class="avatar relative m-2">
+                    <div class="avatar relative m-2 shrink-0">
                         <img
-                            src="https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg"
+                            :src="post.avatar"
                             alt="Profile Picture"
-                            class="rounded-full w-10 h-10"
+                            class="rounded-full w-10 h-10 object-cover"
                         />
-                        <span class="h-3 w-3 bottom-0 right-0 absolute rounded-full bg-green-400"></span>
+                        <span
+                            :class="['h-3 w-3 bottom-0 right-0 absolute rounded-full ',
+                            post.status === 'online' ? 'bg-green-400' : post.status === 'away' ? 'bg-orange-300' : 'bg-gray-200']"
+                        ></span>
                     </div>
-                    <div class="details flex-grow m-2">
+                    <div class="details flex-grow m-2 min-w-0">
                         <div class="flex justify-between">
                             <!-- if message, bold -->
-                            <span class="font-bold">Jessie Nelson</span>
-                            <span>09:00</span>
+                            <span :class="post.notifications ? 'font-bold' : ''">{{ post.name }}</span>
+                            <span>{{ post.timeFormatted }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span
-                                class="last-message text-gray-500"
-                            >Did you want to go there tomorrow?</span>
+                            <span class="last-message text-gray-500 truncate">{{ post.message }}</span>
                             <!-- if notification -->
                             <div
-                                class="notification-count rounded-xl bg-orange-400 text-white w-3 h-3 flex justify-center items-center"
+                                v-if="post.notifications"
+                                class="notification-count ml-2 rounded-xl bg-orange-400 text-white min-w-0 w-3 h-3 flex justify-center items-center"
                             >
-                                <span>2</span>
+                                <span>{{ post.notifications }}</span>
                             </div>
                         </div>
                     </div>
@@ -90,6 +129,8 @@
 
 <style scoped>
 .nav-container {
+    height: 95px;
+
     li {
         margin-left: 12px;
     }
@@ -99,18 +140,23 @@
 
             &.active {
                 color: rgb(6, 182, 212);
+                font-weight: bold;
             }
         }
     }
 }
 
 .chat-page {
+    height: calc(100% - 95px);
+
     .conversation {
         .last-message {
             font-size: 12px;
         }
         .notification-count {
             font-size: 10px;
+            min-width: 12px;
+            min-height: 12px;
         }
     }
 }
