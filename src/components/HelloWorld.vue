@@ -41,7 +41,7 @@ const posts = ref([
 
 <template>
     <!-- Navigation Header Component -->
-    <div class="nav-container flex justify-between bg-white">
+    <div class="nav-container flex justify-between bg-white border-b-gray-200 border-b-2">
         <div class="logo-container flex items-center p-5">
             <ul class="flex justify-between items-center text-3xl">
                 <li>
@@ -66,14 +66,14 @@ const posts = ref([
     </div>
 
     <!-- Chat Page/Route -->
-    <div class="chat-page flex">
+    <div class="chat-page flex bg-gray-200">
         <!-- MiniConversation Component -->
         <div class="mini-conversation-container w-1/3 bg-gray-200 overflow-scroll pb-4">
             <!-- Search Component -->
             <div class="search relative m-4">
                 <input
                     type="text"
-                    class="bg-blue rounded-xl w-full h-full px-4 py-2 pl-9 focus:outline-none"
+                    class="rounded-xl w-full h-full px-4 py-2 pl-9 focus:outline-none"
                     placeholder="Search"
                 />
                 <font-awesome-icon
@@ -88,7 +88,7 @@ const posts = ref([
                 <!-- Lots of these -->
                 <div
                     :class="['conversation cursor-pointer hover:bg-gray-50 bg-white flex mx-4 border-b-2 border-b-gray-100',
-                    index === 0 ? 'rounded-t-lg' : '', index === posts.length - 1 ? 'rounded-b-lg' : '']"
+                    index === 0 ? 'rounded-t-xl' : '', index === posts.length - 1 ? 'rounded-b-xl' : '']"
                 >
                     <div class="avatar relative m-2 shrink-0">
                         <img
@@ -123,7 +123,27 @@ const posts = ref([
         </div>
 
         <!-- Chat Component -->
-        <div class="chat-container w-2/3 bg-orange-300"></div>
+        <div class="chat-container w-2/3 flex-col relative bg-white rounded-b-xl">
+            <div class="messages-container bg-white"></div>
+            <div class="chat-box bg-gray=100 h-14 flex justify-between items-center rounded-b-xl">
+                <div class="relative flex w-full mx-4">
+                    <input
+                        type="text"
+                        class="chat-input bg-gray-100 rounded-xl w-full h-full pl-9 pr-2 py-2 focus:outline-none"
+                        placeholder="Search"
+                    />
+                    <font-awesome-icon
+                        class="text-slate-500 absolute top-0 left-2 h-full"
+                        :icon="['fas', 'sms']"
+                    />
+                </div>
+                <span
+                    class="bg-cyan-500 hover:bg-cyan-400 mr-4 rounded-full h-9 w-10 cursor-pointer items-center flex justify-center"
+                >
+                    <font-awesome-icon class="text-white" :icon="['fas', 'paper-plane']" />
+                </span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -157,6 +177,12 @@ const posts = ref([
             font-size: 10px;
             min-width: 12px;
             min-height: 12px;
+        }
+    }
+
+    .chat-container {
+        .messages-container {
+            height: calc(100% - 56px);
         }
     }
 }
