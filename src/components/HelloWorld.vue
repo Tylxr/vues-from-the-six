@@ -37,6 +37,44 @@ const posts = ref([
     }
 ]);
 
+const authorDetails = ref({
+    name: 'Alex Jones',
+    avatar: 'https://www.opticalexpress.co.uk/media/1064/man-with-glasses-smiling-looking-into-distance.jpg'
+});
+
+const messages = ref([
+    {
+        type: 'sent',
+        timeFormatted: '09:00',
+        message: "Hey. How have you been?"
+    },
+    {
+        type: 'sent',
+        timeFormatted: '09:04',
+        message: "I've been so busy these last few months. Sorry I couldn't message you until now."
+    },
+    {
+        type: 'received',
+        timeFormatted: '09:09',
+        message: "Hi Tyler! I've been doing well thank you. How are things with the new puppy?"
+    },
+    {
+        type: 'sent',
+        timeFormatted: '09:15',
+        message: "They're going well. He's definitely a handful. How is life in Spain?"
+    },
+    {
+        type: 'received',
+        timeFormatted: '09:26',
+        message: "Good to hear!"
+    },
+    {
+        type: 'received',
+        timeFormatted: '09:26',
+        message: "The weather is hot and the beaches are beautiful. Life is good!"
+    }
+].reverse());
+
 </script>
 
 <template>
@@ -124,7 +162,12 @@ const posts = ref([
 
         <!-- Chat Component -->
         <div class="chat-container w-2/3 flex-col relative bg-white rounded-b-xl">
-            <div class="messages-container bg-white"></div>
+            <div class="recipient-details bg-green-500 h-14"></div>
+            <div class="messages-container bg-cyan-200 overflow-auto flex flex-col-reverse">
+                <div v-for="message in messages">
+                    <span class="bg-gray-300 p-3 my-3 block">{{ message.message }}</span>
+                </div>
+            </div>
             <div class="chat-box bg-gray=100 h-14 flex justify-between items-center rounded-b-xl">
                 <div class="relative flex w-full mx-4">
                     <input
@@ -182,7 +225,7 @@ const posts = ref([
 
     .chat-container {
         .messages-container {
-            height: calc(100% - 56px);
+            height: calc(100% - 112px);
         }
     }
 }
