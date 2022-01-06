@@ -106,7 +106,7 @@ const messages = ref([
     <!-- Chat Page/Route -->
     <div class="chat-page flex bg-gray-200">
         <!-- MiniConversation Component -->
-        <div class="mini-conversation-container w-1/3 bg-gray-200 overflow-scroll pb-4">
+        <div class="mini-conversation-container w-1/3 bg-gray-200 overflow-y-scroll pb-4">
             <!-- Search Component -->
             <div class="search relative m-4">
                 <input
@@ -163,9 +163,30 @@ const messages = ref([
         <!-- Chat Component -->
         <div class="chat-container w-2/3 flex-col relative bg-white rounded-b-xl">
             <div class="recipient-details bg-green-500 h-14"></div>
-            <div class="messages-container bg-cyan-200 overflow-auto flex flex-col-reverse">
-                <div v-for="message in messages">
-                    <span class="bg-gray-300 p-3 my-3 block">{{ message.message }}</span>
+            <div class="messages-container overflow-y-scroll flex flex-col-reverse">
+                <div
+                    v-for="(message, index) in messages"
+                    :class="['w-2/3', message.type === 'sent' ? 'self-end' : 'self-start']"
+                    :key="index"
+                >
+                    <div
+                        :class="['flex', message.type === 'sent' ? 'justify-end' : 'justify-start']"
+                    >
+                        <div v-if="message.type === 'received'" class="shrink-0 ml-4">
+                            <img
+                                :src="authorDetails.avatar"
+                                alt="Avatar"
+                                class="rounded-full w-12 h-12 object-cover"
+                            />
+                        </div>
+                        <span
+                            :class="['bg-gray-300 p-3 block mx-4 rounded-xl text-sm',
+                                messages[index - 1]?.type !== message.type ? 'mb-6' : 'mb-1',
+                                message.type === 'sent' ? 'rounded-tr-none bg-cyan-600 text-white' : 'rounded-tl-none bg-gray-300',
+                                index + 1 === messages.length ? 'mt-6' : ''
+                            ]"
+                        >{{ message.message }}</span>
+                    </div>
                 </div>
             </div>
             <div class="chat-box bg-gray=100 h-14 flex justify-between items-center rounded-b-xl">
