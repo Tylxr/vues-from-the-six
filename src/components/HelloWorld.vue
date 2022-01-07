@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 // Temporary
-const posts = ref([
+const conversations = ref([
     {
         name: 'Jessie Nelson',
         avatar: 'https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg',
@@ -20,6 +20,15 @@ const posts = ref([
         status: 'away'
     },
     {
+        name: 'Alex Jones',
+        avatar: 'https://www.opticalexpress.co.uk/media/1064/man-with-glasses-smiling-looking-into-distance.jpg',
+        timeFormatted: '12:48',
+        message: 'The weather is hot and the beaches are beautiful. Life is good!',
+        notifications: 0,
+        status: 'away',
+        active: true
+    },
+    {
         name: 'Abbie Smith',
         avatar: 'https://maundymitchell.com/wp-content/uploads/2019/09/Actor-Headshot-on-White-Background_0003-1024x683.jpg',
         timeFormatted: '11:03',
@@ -27,19 +36,12 @@ const posts = ref([
         notifications: 0,
         status: 'offline'
     },
-    {
-        name: 'Alex Jones',
-        avatar: 'https://www.opticalexpress.co.uk/media/1064/man-with-glasses-smiling-looking-into-distance.jpg',
-        timeFormatted: '09:00',
-        message: 'If you want to! Any day is fine with me.',
-        notifications: 0,
-        status: 'away'
-    }
 ]);
 
 const authorDetails = ref({
     name: 'Alex Jones',
-    avatar: 'https://www.opticalexpress.co.uk/media/1064/man-with-glasses-smiling-looking-into-distance.jpg'
+    avatar: 'https://www.opticalexpress.co.uk/media/1064/man-with-glasses-smiling-looking-into-distance.jpg',
+    lastOnlineFormatted: 'About 1hr ago'
 });
 
 const messages = ref([
@@ -122,37 +124,44 @@ const messages = ref([
 
             <h4 class="ml-4 mb-1 italic text-gray-600">Recent Conversations</h4>
 
-            <div v-for="(post, index) in posts" :key="index" class="conversation-container text-sm">
+            <div
+                v-for="(convo, index) in conversations"
+                :key="index"
+                class="conversation-container text-sm"
+            >
                 <!-- Lots of these -->
                 <div
                     :class="['conversation cursor-pointer hover:bg-gray-50 bg-white flex mx-4 border-b-2 border-b-gray-100',
-                    index === 0 ? 'rounded-t-xl' : '', index === posts.length - 1 ? 'rounded-b-xl' : '']"
+                        index === 0 ? 'rounded-t-xl' : '',
+                        index === conversations.length - 1 ? 'rounded-b-xl' : '',
+                        convo.active ? 'bg-gray-100 border-b-0 border-l-2 border-cyan-500' : ''
+                    ]"
                 >
                     <div class="avatar relative m-2 shrink-0">
                         <img
-                            :src="post.avatar"
+                            :src="convo.avatar"
                             alt="Profile Picture"
                             class="rounded-full w-10 h-10 object-cover"
                         />
                         <span
                             :class="['h-3 w-3 bottom-0 right-0 absolute rounded-full ',
-                            post.status === 'online' ? 'bg-green-400' : post.status === 'away' ? 'bg-orange-300' : 'bg-gray-200']"
+                            convo.status === 'online' ? 'bg-green-400' : convo.status === 'away' ? 'bg-orange-300' : 'bg-gray-200']"
                         ></span>
                     </div>
                     <div class="details flex-grow m-2 min-w-0">
                         <div class="flex justify-between">
                             <!-- if message, bold -->
-                            <span :class="post.notifications ? 'font-bold' : ''">{{ post.name }}</span>
-                            <span>{{ post.timeFormatted }}</span>
+                            <span :class="convo.notifications ? 'font-bold' : ''">{{ convo.name }}</span>
+                            <span>{{ convo.timeFormatted }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="last-message text-gray-500 truncate">{{ post.message }}</span>
+                            <span class="last-message text-gray-500 truncate">{{ convo.message }}</span>
                             <!-- if notification -->
                             <div
-                                v-if="post.notifications"
+                                v-if="convo.notifications"
                                 class="notification-count ml-2 rounded-xl bg-orange-400 text-white min-w-0 w-3 h-3 flex justify-center items-center"
                             >
-                                <span>{{ post.notifications }}</span>
+                                <span>{{ convo.notifications }}</span>
                             </div>
                         </div>
                     </div>
@@ -162,7 +171,21 @@ const messages = ref([
 
         <!-- Chat Component -->
         <div class="chat-container w-2/3 flex-col relative bg-white rounded-b-xl">
-            <div class="recipient-details bg-green-500 h-14"></div>
+            <div
+                class="recipient-details bg-gray-200 rounded-xl m-4 p-2 flex justify-start items-center"
+            >
+                <img
+                    :src="authorDetails.avatar"
+                    alt="Profile Picture"
+                    class="rounded-full h-12 w-12 object-cover"
+                />
+                <div class="flex flex-col ml-4">
+                    <span class="inline-block">{{ authorDetails.name }}</span>
+                    <span
+                        class="inline-block text-xs -mt-1 text-gray-500"
+                    >{{ authorDetails.lastOnlineFormatted }}</span>
+                </div>
+            </div>
             <div class="messages-container overflow-y-scroll flex flex-col-reverse">
                 <div
                     v-for="(message, index) in messages"
@@ -172,13 +195,23 @@ const messages = ref([
                     <div
                         :class="['flex', message.type === 'sent' ? 'justify-end' : 'justify-start']"
                     >
-                        <div v-if="message.type === 'received'" class="shrink-0 ml-4">
+                        <div
+                            v-if="message.type === 'received' && messages[index + 1]?.type !== 'received'"
+                            class="shrink-0 ml-4"
+                        >
                             <img
                                 :src="authorDetails.avatar"
-                                alt="Avatar"
+                                alt="Profile Picture"
                                 class="rounded-full w-12 h-12 object-cover"
                             />
+                            <span
+                                class="text-xs text-center block text-gray-400"
+                            >{{ message.timeFormatted }}</span>
                         </div>
+                        <div
+                            class="shrink-0 ml-4 w-12"
+                            v-if="message.type === 'received' && messages[index + 1]?.type === 'received'"
+                        ></div>
                         <span
                             :class="['bg-gray-300 p-3 block mx-4 rounded-xl text-sm',
                                 messages[index - 1]?.type !== message.type ? 'mb-6' : 'mb-1',
@@ -246,7 +279,7 @@ const messages = ref([
 
     .chat-container {
         .messages-container {
-            height: calc(100% - 112px);
+            height: calc(100% - 160px);
         }
     }
 }
